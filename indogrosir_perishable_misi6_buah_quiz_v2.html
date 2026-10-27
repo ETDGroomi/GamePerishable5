@@ -1,0 +1,965 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#38BDF8" />
+  <title>Indogrosir Perishable • Misi 6 Buah</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            comic: ['"Trebuchet MS"', 'Arial', 'sans-serif']
+          },
+          keyframes: {
+            pop: {
+              '0%': { transform: 'scale(.88)', opacity: '0' },
+              '100%': { transform: 'scale(1)', opacity: '1' }
+            },
+            bouncey: {
+              '0%,100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-7px)' }
+            },
+            shake: {
+              '0%,100%': { transform: 'translateX(0)' },
+              '25%': { transform: 'translateX(-5px)' },
+              '75%': { transform: 'translateX(5px)' }
+            },
+            confetti: {
+              '0%': { transform: 'translateY(-10vh) rotate(0deg)', opacity: '1' },
+              '100%': { transform: 'translateY(110vh) rotate(720deg)', opacity: '0' }
+            }
+          },
+          animation: {
+            pop: 'pop .25s ease-out',
+            bouncey: 'bouncey .9s ease-in-out infinite',
+            shake: 'shake .35s ease-in-out',
+            confetti: 'confetti 3.4s linear forwards'
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      background: #e0f2fe;
+      color: #111827;
+    }
+    .screen { min-height: 100dvh; }
+    .comic-border { border: 4px solid #111827; }
+    .comic-card {
+      border: 4px solid #111827;
+      box-shadow: 7px 7px 0 #111827;
+    }
+    .comic-btn {
+      border: 4px solid #111827;
+      box-shadow: 6px 6px 0 #111827;
+      transition: .15s;
+    }
+    .comic-btn:active {
+      transform: translate(4px,4px);
+      box-shadow: 2px 2px 0 #111827;
+    }
+    .option-btn {
+      border: 4px solid #111827;
+      box-shadow: 4px 4px 0 #111827;
+      transition: .15s;
+    }
+    .option-btn:not(:disabled):active {
+      transform: translate(3px,3px);
+      box-shadow: 1px 1px 0 #111827;
+    }
+    .option-btn.correct { background: #86efac !important; }
+    .option-btn.wrong { background: #fca5a5 !important; }
+    .option-btn.selected { outline: 5px solid #facc15; }
+    .option-btn:disabled { cursor: not-allowed; }
+    .mini-badge {
+      border: 3px solid #111827;
+      box-shadow: 3px 3px 0 #111827;
+    }
+    .progress-track {
+      border: 3px solid #111827;
+      background: #fff;
+    }
+    .progress-fill { transition: width .35s ease; }
+    .hidden-screen { display: none !important; }
+    .speech { position: relative; }
+    .speech:after {
+      content: "";
+      position: absolute;
+      left: 28px;
+      bottom: -14px;
+      width: 22px;
+      height: 22px;
+      background: #fff;
+      border-right: 4px solid #111827;
+      border-bottom: 4px solid #111827;
+      transform: rotate(45deg);
+    }
+    .pair-btn {
+      min-height: 58px;
+      touch-action: manipulation;
+    }
+    .pair-btn.selected {
+      outline: 5px solid #facc15;
+      background: #dbeafe !important;
+    }
+    .pair-btn.matched {
+      background: #86efac !important;
+    }
+    .pair-btn.error-flash {
+      background: #fca5a5 !important;
+      animation: shake .25s ease-in-out;
+    }
+    .connect-wrap { position: relative; }
+    .connect-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .drop-zone {
+      min-height: 86px;
+      border: 3px dashed #111827;
+    }
+    .confetti-piece {
+      position: fixed;
+      top: -20px;
+      width: 12px;
+      height: 20px;
+      pointer-events: none;
+      z-index: 100;
+      animation: confetti 3.4s linear forwards;
+    }
+    .safe-bottom { padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
+  </style>
+</head>
+
+<body>
+  <main id="app" class="screen">
+
+    <!-- START -->
+    <section id="startScreen" class="screen flex items-center justify-center p-4 bg-gradient-to-b from-sky-100 via-white to-cyan-100">
+      <div class="w-full max-w-xl">
+        <div class="flex items-center justify-between mb-5 gap-2">
+          <div class="mini-badge bg-[#0D72B9] text-white rounded-xl px-3 py-2 font-black text-sm">INDOGROSIR</div>
+          <div class="mini-badge bg-red-100 text-red-700 rounded-xl px-3 py-2 font-black text-sm">PERISHABLE</div>
+        </div>
+
+        <div class="comic-card rounded-[2rem] bg-white p-6 sm:p-8 overflow-hidden">
+          <div class="text-center">
+            <div class="text-6xl sm:text-7xl animate-bouncey mb-2">🍊🍉🍌</div>
+            <div class="inline-block comic-border rounded-full px-4 py-2 bg-yellow-300 font-black text-sm -rotate-2 mb-4">
+              MISI 6 • BUAH
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-black leading-tight">
+              FRUIT<br>
+              <span class="text-sky-500">MISSION!</span>
+            </h1>
+            <p class="mt-3 text-lg font-bold">
+              Siap menaklukkan 15 misi buah? 🎯<br>
+              Uji cara kita menerima, memajang, menyortir, dan mengolah buah.
+            </p>
+          </div>
+
+          <div class="speech comic-border rounded-3xl mt-6 p-4 bg-sky-50 font-bold">
+            💬 Fokus ya! Tiap soal punya <b>30 detik</b> dan kita punya <b>5 ❤️</b>.
+          </div>
+
+          <label for="nameInput" class="block mt-6 text-sm font-black uppercase tracking-wide">
+            Nama Lengkap
+          </label>
+          <input id="nameInput" type="text" maxlength="50" autocomplete="name"
+            placeholder="Tulis nama lengkap..."
+            class="w-full mt-2 comic-border rounded-2xl px-4 py-4 text-lg font-bold outline-none focus:ring-4 focus:ring-sky-300" />
+
+          <p id="nameHint" class="text-sm font-bold text-red-600 mt-2 hidden">
+            Nama lengkap wajib diisi.
+          </p>
+
+          <button id="startBtn" disabled
+            class="w-full mt-5 comic-btn rounded-2xl py-4 text-xl font-black bg-gray-300 text-gray-500 cursor-not-allowed">
+            🚀 MULAI MISI
+          </button>
+        </div>
+
+        <p class="text-center text-xs font-bold text-slate-500 mt-4">
+          Background biru muda • 15 soal • Lulus minimal 70%
+        </p>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quizScreen" class="screen hidden-screen p-3 sm:p-5 bg-gradient-to-b from-sky-100 via-white to-cyan-100">
+      <div class="w-full max-w-2xl mx-auto">
+
+        <header class="sticky top-0 z-30 -mx-3 px-3 pt-2 pb-3 sm:static sm:mx-0 sm:px-0 bg-gradient-to-b from-sky-100/95 to-transparent backdrop-blur">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="mini-badge bg-white rounded-xl px-2 py-1 text-xs font-black">👤 <span id="playerNameTop">Peserta</span></div>
+            <div class="mini-badge bg-red-100 text-red-700 rounded-xl px-2 py-1 text-xs font-black">❤️ <span id="livesTop">5</span></div>
+
+            <div class="ml-auto flex gap-2">
+              <button id="muteBtn" class="mini-badge bg-yellow-300 rounded-xl px-3 py-2 font-black text-sm">🔊</button>
+              <button id="giveUpBtn" class="mini-badge bg-white rounded-xl px-3 py-2 font-black text-sm text-red-700">MENYERAH</button>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <div class="progress-track rounded-full h-5 flex-1 overflow-hidden">
+              <div id="progressFill" class="progress-fill h-full bg-sky-500" style="width:0%"></div>
+            </div>
+            <div id="questionCounter" class="font-black text-sm whitespace-nowrap">1 / 15</div>
+          </div>
+        </header>
+
+        <div class="mt-4">
+          <div id="questionCard" class="comic-card bg-white rounded-[2rem] p-4 sm:p-6 animate-pop">
+            <div class="flex items-center justify-between gap-2 mb-4">
+              <div id="levelBadge" class="mini-badge rounded-full px-3 py-1 bg-sky-100 text-sky-800 font-black text-xs">
+                C1 • REMEMBERING
+              </div>
+              <div id="timerBadge" class="mini-badge rounded-full px-3 py-1 bg-yellow-300 font-black text-sm">⏱️ 30s</div>
+            </div>
+
+            <div id="questionTypeBadge" class="inline-block bg-red-100 text-red-700 comic-border rounded-xl px-3 py-1 text-xs font-black mb-3">
+              PILIHAN GANDA
+            </div>
+
+            <h2 id="questionText" class="text-2xl sm:text-3xl font-black leading-tight"></h2>
+
+            <div id="questionVisual" class="mt-4"></div>
+            <div id="answerArea" class="mt-5"></div>
+
+            <div id="feedbackBox" class="hidden mt-5 comic-border rounded-2xl p-4 animate-pop"></div>
+
+            <button id="nextBtn" disabled
+              class="w-full mt-5 comic-btn rounded-2xl py-4 font-black text-lg bg-gray-300 text-gray-500 cursor-not-allowed">
+              SOAL SELANJUTNYA ➜
+            </button>
+          </div>
+        </div>
+
+        <div class="safe-bottom"></div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="resultScreen" class="screen hidden-screen flex items-center justify-center p-4 bg-gradient-to-b from-sky-100 via-white to-yellow-100">
+      <div class="w-full max-w-xl">
+        <div class="comic-card rounded-[2rem] bg-white p-6 sm:p-8 text-center animate-pop">
+          <div id="resultEmoji" class="text-7xl mb-3">🏆</div>
+          <div id="resultRibbon" class="inline-block comic-border rounded-full px-4 py-2 font-black mb-3 bg-green-300">LULUS!</div>
+          <h2 id="resultTitle" class="text-3xl sm:text-4xl font-black"></h2>
+          <p id="resultMessage" class="mt-2 font-bold text-slate-700"></p>
+
+          <div class="grid grid-cols-2 gap-3 mt-6">
+            <div class="comic-border rounded-2xl p-4 bg-sky-50">
+              <div class="text-xs font-black">SKOR</div>
+              <div id="scoreOut" class="text-3xl font-black text-sky-600">0</div>
+            </div>
+            <div class="comic-border rounded-2xl p-4 bg-red-50">
+              <div class="text-xs font-black">PERSENTASE</div>
+              <div id="percentOut" class="text-3xl font-black text-red-600">0%</div>
+            </div>
+          </div>
+
+          <div class="mt-4 comic-border rounded-2xl p-4 bg-white text-left">
+            <div class="text-sm font-black">DETAIL</div>
+            <div id="detailOut" class="mt-2 text-sm font-bold space-y-1"></div>
+          </div>
+
+          <button id="retryBtn" class="w-full mt-6 comic-btn rounded-2xl py-4 text-xl font-black bg-sky-500 text-white">
+            🔁 ULANGI KUIS
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL -->
+  <div id="confirmModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50">
+    <div class="w-full max-w-sm comic-card rounded-3xl bg-white p-6 text-center animate-pop">
+      <div class="text-5xl mb-3">🤔</div>
+      <h3 class="text-2xl font-black">Yakin mau menyerah?</h3>
+      <p class="mt-2 font-bold text-slate-600">“Apakah anda yakin untuk mengulang kuis?”</p>
+      <div class="grid grid-cols-2 gap-3 mt-5">
+        <button id="cancelGiveUp" class="option-btn rounded-xl py-3 font-black bg-white">BATAL</button>
+        <button id="confirmGiveUp" class="option-btn rounded-xl py-3 font-black bg-red-600 text-white">YA, ULANG</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        id:1, level:'C1', levelLabel:'REMEMBERING', type:'mcq', typeLabel:'PILIHAN GANDA',
+        q:'Mana yang termasuk ciri-ciri buah dengan kualitas baik?',
+        options:['Keriput, kusam, dan banyak bintik hitam','Berwarna cerah, aroma harum, kulit keras','Kulit memar dan aroma menyengat','Banyak bagian lembek dan rusak'],
+        answer:1,
+        explain:'Modul menyebut ciri buah berkualitas baik: berwarna cerah, aroma harum, dan kulit keras.'
+      },
+      {
+        id:2, level:'C1', levelLabel:'REMEMBERING', type:'truefalse', typeLabel:'BENAR / SALAH',
+        q:'Saat penerimaan, buah yang keriput, memiliki memar pada kulit, atau banyak bintik hitam wajib ditolak.',
+        answer:true,
+        explain:'Benar. Modul menegaskan kondisi tersebut termasuk buah yang wajib ditolak saat penerimaan.'
+      },
+      {
+        id:3, level:'C1', levelLabel:'REMEMBERING', type:'symbols', typeLabel:'PILIH SIMBOL',
+        q:'Alat apa yang digunakan untuk menguji tingkat kemanisan atau kadar gula buah?',
+        symbols:[['🔬','Refraktometer / Brix'],['⚖️','Timbangan'],['🧤','Sarung tangan'],['🌡️','Termometer']],
+        answer:0,
+        explain:'Refraktometer yang biasa disebut alat Brix digunakan untuk menguji tingkat kemanisan atau kadar gula buah.'
+      },
+      {
+        id:4, level:'C1', levelLabel:'REMEMBERING', type:'mcq', typeLabel:'PILIHAN GANDA',
+        q:'Saat menggunakan alat Brix, suhu ruangan yang disebutkan dalam modul adalah sekitar…',
+        options:['10°C','15°C','20°C','30°C'],
+        answer:2,
+        explain:'Modul menyebut suhu ruangan sekitar 20°C saat menggunakan alat Brix.'
+      },
+      {
+        id:5, level:'C2', levelLabel:'UNDERSTANDING', type:'connecting', typeLabel:'CONNECTING DOT',
+        q:'Hubungkan kondisi buah dengan tindakan yang tepat.',
+        left:[
+          ['Buah keriput / memar / banyak bintik hitam','Tolak saat penerimaan'],
+          ['Buah di display memiliki komponen yang tidak berkualitas baik','Turun pajang'],
+          ['Produk turun pajang dan masih layak konsumsi','Diolah menjadi produk lain'],
+          ['Produk turun pajang dan tidak layak konsumsi','Musnah']
+        ],
+        explain:'Alur pada modul: kualitas buruk saat penerimaan ditolak; kualitas buruk saat display turun pajang; turun pajang yang layak konsumsi diolah; yang tidak layak konsumsi dimusnahkan.'
+      },
+      {
+        id:6, level:'C2', levelLabel:'UNDERSTANDING', type:'sort', typeLabel:'URUTKAN PROSES',
+        q:'Urutkan alur display buah yang mengikuti prinsip FIFO.',
+        items:[
+          ['Angkat buah lama dari pajangan','1'],
+          ['Tempatkan buah lama di trolley','2'],
+          ['Pajang buah yang baru datang','3'],
+          ['Letakkan buah lama di atas buah baru','4'],
+          ['Cek Price Tag & POP','5']
+        ],
+        explain:'Modul menjelaskan urutan display: angkat buah lama, tempatkan di trolley, pajang buah baru, letakkan buah lama di atas buah baru, lalu cek Price Tag & POP.'
+      },
+      {
+        id:7, level:'C2', levelLabel:'UNDERSTANDING', type:'mcq', typeLabel:'PILIHAN GANDA',
+        q:'Apa arti FIFO dalam display buah?',
+        options:[
+          'Buah yang paling mahal dijual terlebih dahulu',
+          'Buah yang masuk terlebih dahulu harus terjual terlebih dahulu',
+          'Buah baru selalu diletakkan paling atas',
+          'Buah lama harus dibuang'
+        ],
+        answer:1,
+        explain:'FIFO = First In, First Out: barang yang masuk terlebih dahulu harus terjual terlebih dahulu.'
+      },
+      {
+        id:8, level:'C2', levelLabel:'UNDERSTANDING', type:'symbols', typeLabel:'PILIH KONDISI',
+        q:'Pilih karakter pajangan buah yang sesuai dengan standar tampilan yang diinginkan.',
+        symbols:[['✨','Rapih'],['🧽','Bersih'],['🌈','Indah'],['😎','Cantik & menggoda'],['🤢','Jorok'],['😱','Seram']],
+        answer:[0,1,2,3],
+        multi:true,
+        explain:'Modul mencontohkan display yang diharapkan: rapih, bersih, indah, cantik, dan menggoda.'
+      },
+      {
+        id:9, level:'C2', levelLabel:'UNDERSTANDING', type:'mcq', typeLabel:'PILIHAN GANDA',
+        q:'Bagaimana aturan tumpukan maksimal untuk buah semangka pada display?',
+        options:['1 tumpukan','2 tumpukan','Maksimal 3 tumpukan','Bebas asal penuh'],
+        answer:2,
+        explain:'Modul menyebut pajang semangka ditumpuk maksimal 3 tumpukan untuk menghindari beban terlalu berat.'
+      },
+      {
+        id:10, level:'C3', levelLabel:'APPLYING', type:'mcq', typeLabel:'STUDI KASUS',
+        q:'Kita menemukan satu buah mangga dengan kulit mulai kuku-kuku/bermasalah di display. Tindakan yang paling sesuai adalah…',
+        options:[
+          'Tetap dipajang agar display penuh',
+          'Segera turunkan dari keranjang pajangan',
+          'Campurkan dengan buah yang baru datang',
+          'Sembunyikan di belakang display'
+        ],
+        answer:1,
+        explain:'Modul menegaskan buah yang kulitnya bermasalah harus segera diturunkan dari keranjang pajangan.'
+      },
+      {
+        id:11, level:'C3', levelLabel:'APPLYING', type:'truefalse', typeLabel:'BENAR / SALAH',
+        q:'Buah import selalu dipajang di dalam Open Chiller agar kualitas buah tetap dalam keadaan baik.',
+        answer:true,
+        explain:'Benar. Modul menyebut buah import dipajang selalu di dalam Open Chiller untuk menjaga kualitas.'
+      },
+      {
+        id:12, level:'C3', levelLabel:'APPLYING', type:'sort', typeLabel:'URUTKAN LANGKAH',
+        q:'Urutkan langkah membuat “buah potong” sesuai alur pada modul.',
+        items:[
+          ['Siapkan buah, pisau, dan talenan bersih','1'],
+          ['Potong buah sesuai kebutuhan','2'],
+          ['Kupas kulitnya sampai bersih','3'],
+          ['Letakkan buah di wadah plastik mika','4'],
+          ['Wrapping dan tempelkan label harga','5']
+        ],
+        explain:'Alur buah potong pada modul dimulai dari menyiapkan buah dan alat, memotong, mengupas, menata di wadah mika, lalu wrapping dan memberi label harga.'
+      },
+      {
+        id:13, level:'C3', levelLabel:'APPLYING', type:'connecting', typeLabel:'CONNECTING DOT',
+        q:'Hubungkan metode pengolahan dengan definisinya.',
+        left:[
+          ['PLU Tetap','Produk dijual tanpa pengurangan/penambahan, kecuali bagian rusak/busuk'],
+          ['Konversi','Mengubah bentuk asli menjadi produk siap konsumsi'],
+          ['Repacking','Mengubah bentuk dan menambahkan produk lain menjadi produk berbeda']
+        ],
+        explain:'Modul membedakan PLU Tetap, Konversi, dan Repacking berdasarkan bentuk perubahan dan penambahan produk.'
+      },
+      {
+        id:14, level:'C3', levelLabel:'APPLYING', type:'mcq', typeLabel:'STUDI KASUS',
+        q:'Sebelum menjual produk olahan baru, tindakan mana yang harus dilakukan menurut modul?',
+        options:[
+          'Langsung dijual untuk melihat respon pasar',
+          'Pastikan rasa enak/layak dijual, minta persetujuan management, dan ajukan PLU',
+          'Hanya mengganti kemasan',
+          'Cukup meminta persetujuan kasir'
+        ],
+        answer:1,
+        explain:'Modul meminta produk dicoba terlebih dahulu, memperoleh persetujuan management cabang, dan mengajukan PLU dengan detail produk serta usulan harga.'
+      },
+      {
+        id:15, level:'C3', levelLabel:'APPLYING', type:'symbols', typeLabel:'PILIH SIMBOL',
+        q:'Untuk persiapan pengolahan produk, pilih APD/perlengkapan yang disebutkan dalam modul.',
+        symbols:[['🧢','Topi'],['🧤','Sarung tangan'],['😷','Masker'],['🥼','Apron'],['🧣','Syal']],
+        answer:[0,1,2,3],
+        multi:true,
+        explain:'Modul mencantumkan penggunaan topi, sarung tangan, masker, dan apron untuk menjaga kebersihan/higienitas dan mencegah kontaminasi.'
+      }
+    ];
+
+    let state = {
+      name:'', index:0, lives:5, score:0, answered:false,
+      timer:30, timerId:null, muted:false,
+      audioCtx:null, bgmTimer:null, bgmStep:0
+    };
+
+    const $ = s => document.querySelector(s);
+
+    function show(id){
+      ['startScreen','quizScreen','resultScreen'].forEach(x =>
+        $('#'+x).classList.toggle('hidden-screen', x !== id)
+      );
+    }
+
+    function initAudio(){
+      if(state.audioCtx) return;
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if(!Ctx) return;
+      state.audioCtx = new Ctx();
+      if(state.audioCtx.state === 'suspended') state.audioCtx.resume();
+      startBgm();
+    }
+
+    function tone(freq,duration=.09,type='square',volume=.04,when=null){
+      if(state.muted || !state.audioCtx) return;
+      const ctx = state.audioCtx;
+      const t = when ?? ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq,t);
+      gain.gain.setValueAtTime(.0001,t);
+      gain.gain.exponentialRampToValueAtTime(volume,t+.01);
+      gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t+duration+.02);
+    }
+
+    function clickSfx(){ tone(520,.05,'square',.035); }
+    function correctSfx(){
+      if(!state.audioCtx) return;
+      tone(740,.08,'square',.05);
+      tone(988,.14,'square',.05,state.audioCtx.currentTime+.07);
+    }
+    function wrongSfx(){
+      if(!state.audioCtx) return;
+      tone(170,.13,'sawtooth',.05);
+      tone(120,.18,'sawtooth',.045,state.audioCtx.currentTime+.08);
+    }
+    function gameOverSfx(){
+      if(!state.audioCtx) return;
+      [330,262,196,130].forEach((f,i)=>tone(f,.18,'square',.045,state.audioCtx.currentTime+i*.13));
+    }
+    function startBgm(){
+      if(!state.audioCtx || state.bgmTimer) return;
+      const notes=[262,330,392,523,392,330,294,392];
+      state.bgmTimer=setInterval(()=>{
+        if(state.muted) return;
+        tone(notes[state.bgmStep % notes.length],.11,'square',.012);
+        state.bgmStep++;
+      },280);
+    }
+
+    function setStartState(){
+      const valid = $('#nameInput').value.trim().length >= 2;
+      $('#startBtn').disabled = !valid;
+      ['bg-gray-300','text-gray-500','cursor-not-allowed'].forEach(c=>$('#startBtn').classList.toggle(c,!valid));
+      ['bg-sky-500','text-white'].forEach(c=>$('#startBtn').classList.toggle(c,valid));
+      $('#nameHint').classList.add('hidden');
+    }
+
+    $('#nameInput').addEventListener('input',setStartState);
+
+    $('#startBtn').onclick=()=>{
+      initAudio();
+      clickSfx();
+      state.name=$('#nameInput').value.trim();
+      state.index=0; state.lives=5; state.score=0;
+      show('quizScreen');
+      renderQuestion();
+    };
+
+    function renderQuestion(){
+      clearInterval(state.timerId);
+      state.answered=false; state.timer=30;
+      const q=questions[state.index];
+
+      $('#playerNameTop').textContent=state.name;
+      $('#livesTop').textContent=state.lives;
+      $('#questionCounter').textContent=`${state.index+1} / ${questions.length}`;
+      $('#progressFill').style.width=`${(state.index/questions.length)*100}%`;
+      $('#levelBadge').textContent=`${q.level} • ${q.levelLabel}`;
+      $('#questionTypeBadge').textContent=q.typeLabel;
+      $('#questionText').textContent=q.q;
+      $('#questionVisual').innerHTML='';
+      $('#answerArea').innerHTML='';
+      $('#feedbackBox').className='hidden mt-5 comic-border rounded-2xl p-4 animate-pop';
+      enableNext(false);
+      updateTimerUI();
+
+      if(q.type==='mcq') renderMCQ(q);
+      else if(q.type==='truefalse') renderTF(q);
+      else if(q.type==='symbols') renderSymbols(q);
+      else if(q.type==='sort') renderSort(q);
+      else if(q.type==='connecting') renderConnecting(q);
+
+      $('#questionCard').classList.remove('animate-pop');
+      void $('#questionCard').offsetWidth;
+      $('#questionCard').classList.add('animate-pop');
+
+      startTimer();
+    }
+
+    function renderMCQ(q){
+      q.options.forEach((option,i)=>{
+        const b=document.createElement('button');
+        b.className='option-btn w-full text-left rounded-2xl p-4 mb-3 bg-white font-black text-base sm:text-lg';
+        b.innerHTML=`<span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-sky-500 text-white mr-3">${String.fromCharCode(65+i)}</span>${option}`;
+        b.onclick=()=>submitAnswer(i===q.answer);
+        $('#answerArea').appendChild(b);
+      });
+    }
+
+    function renderTF(q){
+      [['✅ BENAR',true],['❌ SALAH',false]].forEach(([label,val])=>{
+        const b=document.createElement('button');
+        b.className='option-btn w-full rounded-2xl p-4 mb-3 bg-white font-black text-lg';
+        b.textContent=label;
+        b.onclick=()=>submitAnswer(val===q.answer);
+        $('#answerArea').appendChild(b);
+      });
+    }
+
+    function renderSymbols(q){
+      const wrap=document.createElement('div');
+      wrap.className='grid grid-cols-2 sm:grid-cols-3 gap-3';
+      q.symbols.forEach((s,i)=>{
+        const b=document.createElement('button');
+        b.className='option-btn rounded-2xl p-3 bg-white font-black';
+        b.innerHTML=`<div class="text-4xl">${s[0]}</div><div class="text-xs mt-1">${s[1]}</div>`;
+        b.onclick=()=>{
+          if(state.answered) return;
+          if(q.multi){
+            b.classList.toggle('selected');
+            const selected=[...wrap.querySelectorAll('button')]
+              .map((x,idx)=>x.classList.contains('selected')?idx:null).filter(x=>x!==null);
+            if(selected.length===q.answer.length){
+              const ok=selected.length===q.answer.length && selected.every(x=>q.answer.includes(x));
+              submitAnswer(ok);
+            }
+          }else{
+            submitAnswer(i===q.answer);
+          }
+        };
+        wrap.appendChild(b);
+      });
+      const note=document.createElement('div');
+      note.className='col-span-full text-sm font-bold text-slate-600';
+      note.textContent=q.multi ? 'Pilih semua yang benar. Setelah jumlah pilihan terpenuhi, jawaban langsung dinilai.' : 'Pilih simbol yang paling tepat.';
+      wrap.prepend(note);
+      $('#answerArea').appendChild(wrap);
+    }
+
+    function renderSort(q){
+      const wrap=document.createElement('div');
+      wrap.innerHTML=`
+        <div class="text-sm font-black mb-2">
+          Susun urutan dari langkah pertama sampai terakhir.
+        </div>
+        <div class="text-xs font-bold text-slate-500 mb-3">
+          Gunakan tombol ▲ untuk menaikkan posisi dan ▼ untuk menurunkan posisi.
+        </div>
+        <div id="sortList" class="space-y-2"></div>
+        <button id="checkSort" class="w-full mt-3 comic-btn rounded-2xl py-3 bg-sky-500 text-white font-black">
+          CEK URUTAN
+        </button>
+      `;
+      $('#answerArea').appendChild(wrap);
+      const list=wrap.querySelector('#sortList');
+
+      [...q.items].sort(()=>Math.random()-.5).forEach((item)=>{
+        const row=document.createElement('div');
+        row.className='option-btn w-full rounded-2xl p-2 bg-white flex items-center gap-2';
+        row.dataset.correct=item[1];
+
+        row.innerHTML=`
+          <div class="flex-1 text-left font-black px-2 py-2">
+            ${item[0]}
+          </div>
+          <div class="flex gap-2 shrink-0">
+            <button
+              type="button"
+              class="move-up comic-border rounded-xl w-11 h-11 bg-sky-100 font-black text-lg"
+              aria-label="Naikkan posisi"
+              title="Naikkan"
+            >▲</button>
+            <button
+              type="button"
+              class="move-down comic-border rounded-xl w-11 h-11 bg-sky-100 font-black text-lg"
+              aria-label="Turunkan posisi"
+              title="Turunkan"
+            >▼</button>
+          </div>
+        `;
+
+        const up=row.querySelector('.move-up');
+        const down=row.querySelector('.move-down');
+
+        up.onclick=(e)=>{
+          e.stopPropagation();
+          if(state.answered) return;
+          const prev=row.previousElementSibling;
+          if(prev){
+            list.insertBefore(row,prev);
+            clickSfx();
+          }
+          updateMoveButtons();
+        };
+
+        down.onclick=(e)=>{
+          e.stopPropagation();
+          if(state.answered) return;
+          const next=row.nextElementSibling;
+          if(next){
+            list.insertBefore(next,row);
+            clickSfx();
+          }
+          updateMoveButtons();
+        };
+
+        list.appendChild(row);
+      });
+
+      function updateMoveButtons(){
+        [...list.children].forEach((row,idx)=>{
+          const up=row.querySelector('.move-up');
+          const down=row.querySelector('.move-down');
+          up.disabled=idx===0;
+          down.disabled=idx===list.children.length-1;
+
+          up.classList.toggle('opacity-40',up.disabled);
+          down.classList.toggle('opacity-40',down.disabled);
+          up.classList.toggle('cursor-not-allowed',up.disabled);
+          down.classList.toggle('cursor-not-allowed',down.disabled);
+        });
+      }
+
+      updateMoveButtons();
+
+      wrap.querySelector('#checkSort').onclick=()=>{
+        if(state.answered) return;
+        const rows=[...list.children];
+        const good=rows.every((row,i)=>row.dataset.correct===String(i+1));
+        submitAnswer(good);
+      };
+    }
+
+    function renderConnecting(q){
+      const container=document.createElement('div');
+      container.className='connect-wrap';
+      container.innerHTML=`
+        <svg class="connect-svg" id="connectSvg"></svg>
+        <div class="grid grid-cols-2 gap-4 relative z-10">
+          <div id="leftCol" class="space-y-3"></div>
+          <div id="rightCol" class="space-y-3"></div>
+        </div>
+        <div class="text-xs font-bold text-slate-500 mt-3 text-center">Cara bermain: pilih 1 item di kiri, lalu pilih pasangan yang benar di kanan.</div>
+      `;
+      $('#answerArea').appendChild(container);
+
+      const leftCol=container.querySelector('#leftCol');
+      const rightCol=container.querySelector('#rightCol');
+      const svg=container.querySelector('#connectSvg');
+
+      const leftItems=q.left.map((x,i)=>({i,text:x[0],match:x[1]}));
+      // Kolom kanan sengaja diacak secara independen dari kolom kiri.
+      // Hindari kebetulan urutan tetap sama dengan kolom kiri.
+      let rightItems;
+      do {
+        rightItems = q.left.map((x,i)=>({i,text:x[1]}))
+          .sort(()=>Math.random()-.5);
+      } while (
+        rightItems.length > 1 &&
+        rightItems.every((item, idx) => item.i === idx)
+      );
+
+      let selectedLeft=null;
+      let matched=0;
+
+      leftItems.forEach(item=>{
+        const b=document.createElement('button');
+        b.className='pair-btn option-btn w-full rounded-2xl p-3 bg-white font-black text-sm';
+        b.dataset.id=item.i;
+        b.textContent=item.text;
+        b.onclick=()=>{
+          if(state.answered || b.classList.contains('matched')) return;
+          [...leftCol.children].forEach(x=>x.classList.remove('selected'));
+          b.classList.add('selected');
+          selectedLeft=item.i;
+        };
+        leftCol.appendChild(b);
+      });
+
+      rightItems.forEach(item=>{
+        const b=document.createElement('button');
+        b.className='pair-btn option-btn w-full rounded-2xl p-3 bg-white font-black text-sm';
+        b.dataset.id=item.i;
+        b.textContent=item.text;
+        b.onclick=()=>{
+          if(state.answered || b.classList.contains('matched') || selectedLeft===null) return;
+
+          const leftButton=leftCol.querySelector(`[data-id="${selectedLeft}"]`);
+          if(item.i===selectedLeft){
+            leftButton.classList.remove('selected');
+            leftButton.classList.add('matched');
+            b.classList.add('matched');
+            drawLine(container,leftButton,b,true,svg);
+            matched++;
+            selectedLeft=null;
+            if(matched===q.left.length) submitAnswer(true);
+          }else{
+            leftButton.classList.add('error-flash');
+            b.classList.add('error-flash');
+            wrongSfx();
+            setTimeout(()=>leftButton.classList.remove('error-flash'),260);
+            setTimeout(()=>b.classList.remove('error-flash'),260);
+            state.lives--;
+            $('#livesTop').textContent=state.lives;
+            if(state.lives<=0){
+              submitAnswer(false,true);
+            }
+          }
+        };
+        rightCol.appendChild(b);
+      });
+
+      window.addEventListener('resize',()=>redrawLines(container,svg),{once:true});
+    }
+
+    function drawLine(container,a,b,good,svg){
+      const cr=container.getBoundingClientRect();
+      const ar=a.getBoundingClientRect();
+      const br=b.getBoundingClientRect();
+      const x1=ar.right-cr.left;
+      const y1=ar.top+ar.height/2-cr.top;
+      const x2=br.left-cr.left;
+      const y2=br.top+br.height/2-cr.top;
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+      line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+      line.setAttribute('stroke',good ? '#16a34a' : '#dc2626');
+      line.setAttribute('stroke-width','6');
+      line.setAttribute('stroke-linecap','round');
+      line.dataset.left=a.dataset.id;
+      line.dataset.right=b.dataset.id;
+      svg.appendChild(line);
+    }
+
+    function redrawLines(){ /* Lines are visually anchored by the layout during the active question. */ }
+
+    function lockAnswerArea(){
+      $('#answerArea').querySelectorAll('button').forEach(b=>b.disabled=true);
+    }
+
+    function submitAnswer(correct, manualLifeLoss=false){
+      if(state.answered) return;
+
+      state.answered=true;
+      clearInterval(state.timerId);
+
+      if(!manualLifeLoss){
+        if(correct){ state.score++; correctSfx(); }
+        else { state.lives--; wrongSfx(); }
+      }else{
+        wrongSfx();
+      }
+
+      $('#livesTop').textContent=state.lives;
+      lockAnswerArea();
+      showFeedback(correct);
+      enableNext(state.lives>0);
+
+      if(state.lives<=0){
+        gameOverSfx();
+        setTimeout(()=>showResult(true),450);
+      }
+    }
+
+    function showFeedback(correct){
+      const q=questions[state.index];
+      $('#feedbackBox').className=`mt-5 comic-border rounded-2xl p-4 animate-pop ${correct?'bg-green-100':'bg-red-100'}`;
+      $('#feedbackBox').innerHTML=`
+        <div class="text-xl font-black">${correct?'✅ JAWABAN BENAR!':'❌ JAWABAN KURANG TEPAT'}</div>
+        <div class="mt-2 font-bold">${q.explain}</div>
+        <div class="mt-2 text-sm font-black ${correct?'text-green-700':'text-red-700'}">
+          ${correct?'Pertahankan fokus!':'Nyawa tersisa: '+state.lives+' ❤️'}
+        </div>
+      `;
+      $('#feedbackBox').classList.remove('hidden');
+    }
+
+    function enableNext(enabled){
+      $('#nextBtn').disabled=!enabled;
+      ['bg-gray-300','text-gray-500','cursor-not-allowed'].forEach(c=>$('#nextBtn').classList.toggle(c,!enabled));
+      ['bg-red-600','text-white'].forEach(c=>$('#nextBtn').classList.toggle(c,enabled));
+      $('#nextBtn').textContent = state.index===questions.length-1 ? 'LIHAT HASIL 🏆' : 'SOAL SELANJUTNYA ➜';
+    }
+
+    $('#nextBtn').onclick=()=>{
+      clickSfx();
+      if(state.index===questions.length-1) showResult(false);
+      else { state.index++; renderQuestion(); window.scrollTo({top:0,behavior:'smooth'}); }
+    };
+
+    function startTimer(){
+      state.timer=30;
+      updateTimerUI();
+      state.timerId=setInterval(()=>{
+        state.timer--;
+        updateTimerUI();
+        if(state.timer<=0){
+          clearInterval(state.timerId);
+          if(!state.answered){
+            submitAnswer(false);
+            $('#feedbackBox').innerHTML += `<div class="mt-2 font-black">⏰ Waktu habis, soal dihitung salah.</div>`;
+          }
+        }
+      },1000);
+    }
+
+    function updateTimerUI(){
+      $('#timerBadge').textContent=`⏱️ ${state.timer}s`;
+      $('#timerBadge').classList.toggle('bg-red-300',state.timer<=8);
+      $('#timerBadge').classList.toggle('bg-yellow-300',state.timer>8);
+      $('#timerBadge').classList.toggle('animate-shake',state.timer<=8);
+    }
+
+    function showResult(gameOver){
+      clearInterval(state.timerId);
+      show('resultScreen');
+
+      const percent=Math.round((state.score/questions.length)*100);
+      const passed=percent>=70 && !gameOver;
+
+      $('#resultEmoji').textContent=passed?'🏆':'😵‍💫';
+      $('#resultRibbon').textContent=passed?'LULUS!':'BELUM LULUS';
+      $('#resultRibbon').className=`inline-block comic-border rounded-full px-4 py-2 font-black mb-3 ${passed?'bg-green-300':'bg-red-300'}`;
+      $('#resultTitle').textContent=passed?'MISI BERHASIL!':'MISI BELUM BERHASIL';
+      $('#resultMessage').textContent=passed
+        ? 'Mantap! Pemahaman materi Misi 6 sudah melewati batas kelulusan 70%.'
+        : 'Tetap semangat! Ulangi kuis dan manfaatkan feedback untuk memperkuat pemahaman.';
+      $('#scoreOut').textContent=`${state.score} / ${questions.length}`;
+      $('#percentOut').textContent=`${percent}%`;
+      $('#detailOut').innerHTML=`
+        <div>👤 Nama: ${escapeHtml(state.name)}</div>
+        <div>❤️ Sisa nyawa: ${state.lives}</div>
+        <div>🎯 Batas lulus: 70%</div>
+      `;
+      if(passed) spawnConfetti();
+      else if(gameOver) gameOverSfx();
+    }
+
+    function spawnConfetti(){
+      const chars=['■','●','◆','▲'];
+      const colors=['#0D72B9','#38BDF8','#D71920','#FACC15','#16A34A','#7C3AED'];
+      for(let i=0;i<55;i++){
+        const e=document.createElement('div');
+        e.className='confetti-piece';
+        e.textContent=chars[Math.floor(Math.random()*chars.length)];
+        e.style.left=(Math.random()*100)+'vw';
+        e.style.color=colors[Math.floor(Math.random()*colors.length)];
+        e.style.fontSize=(10+Math.random()*16)+'px';
+        e.style.animationDelay=(Math.random()*1.8)+'s';
+        document.body.appendChild(e);
+        setTimeout(()=>e.remove(),5500);
+      }
+    }
+
+    function escapeHtml(str){
+      return str.replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    function resetToStart(){
+      clearInterval(state.timerId);
+      state.index=0; state.lives=5; state.score=0; state.answered=false; state.timer=30; state.name='';
+      $('#nameInput').value='';
+      setStartState();
+      show('startScreen');
+      window.scrollTo({top:0});
+    }
+
+    $('#retryBtn').onclick=resetToStart;
+
+    $('#giveUpBtn').onclick=()=>{
+      $('#confirmModal').classList.remove('hidden');
+      $('#confirmModal').classList.add('flex');
+    };
+
+    $('#cancelGiveUp').onclick=()=>{
+      $('#confirmModal').classList.add('hidden');
+    };
+
+    $('#confirmGiveUp').onclick=()=>{
+      $('#confirmModal').classList.add('hidden');
+      resetToStart();
+    };
+
+    $('#muteBtn').onclick=()=>{
+      initAudio();
+      state.muted=!state.muted;
+      $('#muteBtn').textContent=state.muted?'🔇':'🔊';
+      if(!state.muted) clickSfx();
+    };
+
+    $('#confirmModal').addEventListener('click',(e)=>{
+      if(e.target===$('#confirmModal')) $('#confirmModal').classList.add('hidden');
+    });
+
+    setStartState();
+  </script>
+</body>
+</html>
