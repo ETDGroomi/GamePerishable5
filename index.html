@@ -439,6 +439,13 @@ button.opt-card:nth-child(4){animation-delay:.18s}button.opt-card:nth-child(n+5)
 .heroban{position:relative;height:100px;border-radius:18px;overflow:hidden}
 .heroban img{width:100%;height:100%;object-fit:cover}
 .heroban-t{position:absolute;inset:auto 0 0 0;padding:14px 12px 6px;background:linear-gradient(transparent,rgba(0,30,70,.85));color:#fff;font-weight:800;font-size:12px;letter-spacing:.14em}
+#qVisualContainer:empty{display:none}
+.phrow>.phf:only-child{max-width:280px;margin:0 auto}.phrow>.phf:only-child img{height:120px}
+.mcol .opt-card{padding:7px 8px!important;border-radius:14px}
+.mcol .opt-card>span:first-child{font-size:11.5px!important;line-height:1.25}
+.mcol .opt-card .text-xs{font-size:11px!important}
+.mcol .ph{width:24px;height:24px;margin-right:4px}
+.mcol .pair-pill{transform:scale(.8);margin:-4px}
 </style>
 </head>
 
@@ -1240,10 +1247,10 @@ button.opt-card:nth-child(4){animation-delay:.18s}button.opt-card:nth-child(n+5)
      4. BANK DATA 12 MISI INTERAKTIF (100% Sesuai PDF Misi 6)
      ========================================================= */
   Object.assign(Visuals, {
-    misi1: () => strip([['apel','Keriput ❌'],['memar','Memar ❌'],['pisangB','Bintik hitam ❌'],['jeruk','Cerah, harum, keras ✅']], '<b class="text-[#005CAB]">Area Receiving:</b> buah berkualitas baik = berwarna cerah, aroma harum, kulit keras. Cacat fisik seperti ini <b class="text-red-600">WAJIB DITOLAK</b>.'),
-    misi2: () => strip([['thermo','Suhu ruangan ideal'],['brix','Lensa Brix Meter'],['bchart','Rata-rata buah baik > 12']], '🔬 Amati termometer ruangan dan <b>batas warna biru-putih</b> pada lensa Brix Meter (arahkan ke sumber cahaya).'),
-    misi3: () => strip([['bchart','Banana Ripeness Chart'],['pisang','Pisang segar']], '🍌 Pilih nomor kematangan pisang yang <b>WAJIB DITERIMA</b> saat <b>PENERIMAAN</b> (layak pajang 2-3 hari).'),
-    misi4: () => strip([['dpepaya','Pepaya'],['dsemangka','Semangka'],['djeruk','Jeruk'],['dmangga','Mangga']], '✨ Target display Perishable: <b>Rapih, Bersih, Indah, Cantik &amp; Menggoda</b> konsumen!'),
+    misi1: () => '',
+    misi2: () => strip([['thermo','Suhu ruangan ideal'],['brix','Lensa Brix Meter']], '🔬 Amati termometer ruangan dan <b>batas warna biru-putih</b> pada lensa Brix Meter (arahkan ke sumber cahaya).'),
+    misi3: () => strip([['bchart','Banana Ripeness Chart']], '🍌 Pilih nomor kematangan pisang yang <b>WAJIB DITERIMA</b> saat <b>PENERIMAAN</b> (layak pajang 2-3 hari).'),
+    misi4: () => '',
     misi5: () => strip([['dmangga','Pajangan mangga'],['chiller','Open Chiller buah import']], 'Mangga ada yang tergores kuku, dan buah import baru tiba. Apa tindakanmu?'),
     misi6: () => strip([['durian','Durian'],['rambutan','Rambutan'],['kurma','Kurma'],['ponkam','Jeruk Ponkam']], '🎉 <b>Buah Seasonal</b> hadir di musim/event tertentu dan jadi senjata penarik kunjungan konsumen!'),
     misi7: () => strip([['fifo','Alur display FIFO']], '<b>FIFO</b> (First In First Out): barang masuk lebih dulu harus terjual lebih dulu.'),
@@ -1987,13 +1994,13 @@ button.opt-card:nth-child(4){animation-delay:.18s}button.opt-card:nth-child(n+5)
     } while (rightShuffled.length > 1 && rightShuffled.every((r, idx) => r.origIdx === idx));
 
     const container = document.createElement('div');
-    container.className = 'grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-stretch';
+    container.className = 'grid grid-cols-12 gap-2 items-stretch mcol';
 
     const leftCol = document.createElement('div');
-    leftCol.className = 'sm:col-span-5 space-y-2 flex flex-col justify-between';
+    leftCol.className = 'col-span-5 space-y-1.5 flex flex-col justify-between';
 
     const rightCol = document.createElement('div');
-    rightCol.className = 'sm:col-span-7 space-y-2 flex flex-col justify-between';
+    rightCol.className = 'col-span-7 space-y-1.5 flex flex-col justify-between';
 
     function updateMatchingUI() {
       // Update Left Buttons
